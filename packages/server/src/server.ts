@@ -1,10 +1,7 @@
 import express from "express";
-import cors from "cors";
-import axios, { toFormData } from "axios";
 import dotenv from "dotenv";
 import http from "http"; // httpモジュールをインポート
 import { Server as SocketIOServer } from "socket.io"; // Socket.IOサーバーをインポート
-import { OAuth2Guild } from "discord.js";
 
 dotenv.config(); // .envファイルから環境変数を読み込む
 
