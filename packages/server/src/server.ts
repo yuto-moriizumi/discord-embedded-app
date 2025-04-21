@@ -18,7 +18,7 @@ const io = new SocketIOServer(server, {
   },
   path: "/socketio", // 待ち受けパスを /socketio に変更
 });
-const port = process.env.PORT || 3001; // 環境変数またはデフォルトポート
+const port = process.env.PORT || 3000; // 環境変数またはデフォルトポート
 
 // ルームごとのカウンター状態を保持するMap
 const roomCounts = new Map<string, number>();

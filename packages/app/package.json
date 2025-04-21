@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cloudflared": "cloudflared tunnel --url http://localhost:5173"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
