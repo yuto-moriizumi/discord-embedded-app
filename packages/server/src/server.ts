@@ -16,6 +16,7 @@ const io = new SocketIOServer(server, {
     origin: "*", // 開発用にすべてのオリジンを許可 (本番では制限推奨)
     methods: ["GET", "POST"],
   },
+  path: "/socketio", // 待ち受けパスを /socketio に変更
 });
 const port = process.env.PORT || 3001; // 環境変数またはデフォルトポート
 
@@ -88,16 +89,6 @@ io.on("connection", (socket) => {
 // app.use(cors());
 app.use(express.json()); // JSONリクエストボディをパース
 
-// Discord APIのエンドポイント
-const DISCORD_API_ENDPOINT = "https://discord.com/api/v10";
-
-// アクセストークン交換エンドポイント
-app.get("/token", (req) => {
-  console.log("GET /token endpoint is not used in this example.");
-  req.res?.status(200).json({
-    message: "GET /token endpoint is not used in this example.",
-  });
-});
 app.post("/token", async (req, res) => {
   const { code } = req.body;
 

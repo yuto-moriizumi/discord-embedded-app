@@ -8,38 +8,40 @@ let count = 0;
 let currentRoomId: string | null = "test-room"; // 固定のルームIDでテスト
 
 // Socket.IO関連のセットアップ
-// function setupSocketIO() {
-//   // Socket.IOクライアントの初期化 (Viteプロキシ経由で接続、パスを /socketio に指定)
-//   const socket: Socket = io({
-//     // Viteプロキシ設定により、'/socketio' へのリクエストが転送される
-//     path: "/socketio", // Discord Portalの制約に合わせてパスを指定
-//   });
-//   socket.on("connect", () => {
-//     console.log(`Connected to Socket.IO server with id: ${socket.id}`);
-//     // Discord SDKから取得したインスタンスIDをルームIDとして使用 -> 固定IDに変更
-//     // const roomId = discordSdk.instanceId;
-//     const roomId = currentRoomId; // 固定IDを使用
-//     if (roomId) {
-//       socket.emit("joinRoom", { roomId });
-//       console.log(`Joining room: ${roomId}`);
-//     } else {
-//       console.error("Could not get instanceId/roomId to join room.");
-//       // エラー処理: ルームに参加できない場合
-//     }
-//   });
+function setupSocketIO() {
+  // Socket.IOクライアントの初期化 (Viteプロキシ経由で接続、パスを /socketio に指定)
+  const socket: Socket = io({
+    // Viteプロキシ設定により、'/socketio' へのリクエストが転送される
+    path: "/api/socketio", // Discord Portalの制約に合わせてパスを指定
+  });
+  socket.on("connect", () => {
+    console.log(`Connected to Socket.IO server with id: ${socket.id}`);
+    // Discord SDKから取得したインスタンスIDをルームIDとして使用 -> 固定IDに変更
+    // const roomId = discordSdk.instanceId;
+    const roomId = currentRoomId; // 固定IDを使用
+    if (roomId) {
+      socket.emit("joinRoom", { roomId });
+      console.log(`Joining room: ${roomId}`);
+    } else {
+      console.error("Could not get instanceId/roomId to join room.");
+      // エラー処理: ルームに参加できない場合
+    }
+  });
 
-//   // サーバーからのカウント更新イベントをリッスン
-//   socket.on("updateCount", (newCount: number) => {
-//     console.log(`Received count update: ${newCount}`);
-//     count = newCount;
-//     updateCountDisplay();
-//   });
+  // サーバーからのカウント更新イベントをリッスン
+  socket.on("updateCount", (newCount: number) => {
+    console.log(`Received count update: ${newCount}`);
+    count = newCount;
+    updateCountDisplay();
+  });
 
-//   // Socket.IO接続エラーハンドリング (任意)
-//   socket.on("connect_error", (err) => {
-//     console.error("Socket.IO connection error:", err);
-//   });
-// }
+  // Socket.IO接続エラーハンドリング (任意)
+  socket.on("connect_error", (err) => {
+    console.error("Socket.IO connection error:", err);
+  });
+
+  return socket;
+}
 
 async function setupDiscordSdk() {
   try {
@@ -116,38 +118,38 @@ async function setupDiscordSdk() {
   }
 }
 
-// const countElement = document.getElementById("count") as HTMLSpanElement;
-// const incrementButton = document.getElementById(
-//   "incrementButton"
-// ) as HTMLButtonElement;
+const countElement = document.getElementById("count") as HTMLSpanElement;
+const incrementButton = document.getElementById(
+  "incrementButton"
+) as HTMLButtonElement;
 
 // // カウンター表示を更新
-// function updateCountDisplay() {
-//   if (countElement) {
-//     countElement.textContent = count.toString();
-//   }
-// }
+function updateCountDisplay() {
+  if (countElement) {
+    countElement.textContent = count.toString();
+  }
+}
 
 // // カウンター増加リクエストをサーバーに送信
-// function incrementAndNotify() {
-//   // サーバーにincrementCountイベントを送信
-//   // socket.emit("incrementCount");
-//   console.log("Sent incrementCount event to server.");
-//   // UIの更新はサーバーからのupdateCountイベントで行われるため、ここでは何もしない
-// }
+function incrementAndNotify(socket: Socket) {
+  // サーバーにincrementCountイベントを送信
+  socket.emit("incrementCount");
+  console.log("Sent incrementCount event to server.");
+  // UIの更新はサーバーからのupdateCountイベントで行われるため、ここでは何もしない
+}
 
 // // 以前のDiscord SDKコマンドベースの処理は不要なため削除
 
 // // Socket.IOのセットアップを直接呼び出す
-// // setupSocketIO(); // setupDiscordSdk内で呼び出すように変更
+const socket = setupSocketIO(); // setupDiscordSdk内で呼び出すように変更
 
-// if (incrementButton) {
-//   // ボタンクリック時の処理を変更
-//   incrementButton.addEventListener("click", incrementAndNotify);
-// }
+if (incrementButton) {
+  // ボタンクリック時の処理を変更
+  incrementButton.addEventListener("click", () => incrementAndNotify(socket));
+}
 
 // // 初期表示
-// updateCountDisplay();
+updateCountDisplay();
 
 console.log("Counter app initialized.");
 
