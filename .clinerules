@@ -1,0 +1,4 @@
+Speak in Japanese.
+Avoid leaving comments in code.
+
+When you're not aware of the terminal you're using, hold executing commands. To check the current terminal, execute `lsb_release -a` to check the returned message.
