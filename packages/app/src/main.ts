@@ -66,7 +66,8 @@ async function setupDiscordSdk() {
     patchUrlMappings([
       {
         prefix: "/api",
-        target: "rica-lone-queensland-understand.trycloudflare.com",
+        // target: "rica-lone-queensland-understand.trycloudflare.com",
+        target: "localhost:3001",
       },
     ]);
 
