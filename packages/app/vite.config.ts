@@ -15,19 +15,19 @@ export default defineConfig({
      * 開発環境においては次の2種類のproxyを設定する必要がある。
      * https://discord.com/developers/docs/activities/development-guides#run-your-application-locally
      */
-    proxy: {
-      "/api/token": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-      "/api/socketio": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        ws: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
+    // proxy: {
+    //   "/api/token": {
+    //     target: "http://localhost:3000",
+    //     changeOrigin: true,
+    //     rewrite: (path) => path.replace(/^\/api/, ""),
+    //   },
+    //   "/api/socketio": {
+    //     target: "http://localhost:3000",
+    //     changeOrigin: true,
+    //     ws: true,
+    //     rewrite: (path) => path.replace(/^\/api/, ""),
+    //   },
+    // },
     allowedHosts: [".trycloudflare.com"],
   },
 });

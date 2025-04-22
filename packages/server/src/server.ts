@@ -128,7 +128,6 @@ app.post("/token", async (req, res) => {
       },
       body: new URLSearchParams(obj),
     });
-    console.log({ response });
     const { access_token } = await response.json();
 
     res.send({ access_token });

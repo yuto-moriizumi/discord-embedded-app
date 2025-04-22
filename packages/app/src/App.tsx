@@ -3,7 +3,7 @@ import { DiscordSDK, patchUrlMappings } from "@discord/embedded-app-sdk";
 import { io, Socket } from "socket.io-client";
 
 function isDiscordClient() {
-  return typeof window !== "undefined" && "DiscordNative" in window;
+  return typeof window !== "undefined";
 }
 
 async function setupDiscordSdk(): Promise<string> {
@@ -18,14 +18,9 @@ async function setupDiscordSdk(): Promise<string> {
     scope: ["identify", "guilds", "applications.commands"],
   });
 
-  patchUrlMappings([
-    {
-      prefix: "/api",
-      target: "localhost:3000",
-    },
-  ]);
+  console.log("PATCHED");
 
-  const response = await fetch("/api/token", {
+  const response = await window.fetch("/api/token", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
