@@ -1,29 +1,38 @@
+"use client";
+
 import React, { useEffect, useState, useRef } from "react";
 import { DiscordSDK, patchUrlMappings } from "@discord/embedded-app-sdk";
 import { io, Socket } from "socket.io-client";
 
 function isDiscordClient() {
-  return typeof window !== "undefined" && "DiscordNative" in window;
+  console.log(
+    "Is this a Discord client?",
+    typeof window !== "undefined",
+    "DiscordNative" in window
+  );
+  return typeof window !== "undefined";
 }
 
 async function setupDiscordSdk(): Promise<string> {
-  const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
-  await discordSdk.ready();
-
-  const { code } = await discordSdk.commands.authorize({
-    client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
-    response_type: "code",
-    state: "",
-    prompt: "none",
-    scope: ["identify", "guilds", "applications.commands"],
-  });
-
   patchUrlMappings([
     {
       prefix: "/api",
       target: "localhost:3000",
     },
   ]);
+  console.log("PATCHED");
+  const discordSdk = new DiscordSDK(
+    process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID as string
+  );
+  await discordSdk.ready();
+
+  const { code } = await discordSdk.commands.authorize({
+    client_id: process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID as string,
+    response_type: "code",
+    state: "",
+    prompt: "none",
+    scope: ["identify", "guilds", "applications.commands"],
+  });
 
   const response = await fetch("/api/token", {
     method: "POST",
@@ -73,11 +82,10 @@ async function getRoomId() {
   return setupDiscordSdk();
 }
 
-function App() {
+export default function Home() {
   const [count, setCount] = useState(0);
   const socketRef = useRef<Socket | null>(null);
 
-  // Discord SDK認証とSocket.IO接続
   useEffect(() => {
     (async () => {
       socketRef.current = setupSocketIO(await getRoomId(), setCount);
@@ -102,5 +110,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

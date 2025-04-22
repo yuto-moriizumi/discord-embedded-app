@@ -3,22 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "cloudflared": "cloudflared tunnel --url http://localhost:5173"
-  },
-  "devDependencies": {
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "typescript": "^5.0.0",
-    "vite": "^5.0.0",
-    "vite-plugin-mkcert": "^1.17.8"
+    "dev": "PORT=5173 next dev --experimental-https",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@discord/embedded-app-sdk": "^1.0.0",
+    "next": "^14.2.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "socket.io-client": "^4.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.30",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.2.0",
+    "typescript": "^5.0.0"
   }
 }
