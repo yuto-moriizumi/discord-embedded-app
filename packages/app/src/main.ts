@@ -5,10 +5,10 @@ import { io, Socket } from "socket.io-client"; // Socket.IOクライアントを
 // Discord SDKの初期化
 
 let count = 0;
-let currentRoomId: string | null = "test-room"; // 固定のルームIDでテスト
+let currentRoomId: string | null = null; // ボイスチャンネルIDを後でセット
 
 // Socket.IO関連のセットアップ
-function setupSocketIO() {
+function setupSocketIO(roomId: string) {
   // Socket.IOクライアントの初期化 (Viteプロキシ経由で接続、パスを /socketio に指定)
   const socket: Socket = io({
     // Viteプロキシ設定により、'/socketio' へのリクエストが転送される
@@ -16,14 +16,11 @@ function setupSocketIO() {
   });
   socket.on("connect", () => {
     console.log(`Connected to Socket.IO server with id: ${socket.id}`);
-    // Discord SDKから取得したインスタンスIDをルームIDとして使用 -> 固定IDに変更
-    // const roomId = discordSdk.instanceId;
-    const roomId = currentRoomId; // 固定IDを使用
     if (roomId) {
       socket.emit("joinRoom", { roomId });
       console.log(`Joining room: ${roomId}`);
     } else {
-      console.error("Could not get instanceId/roomId to join room.");
+      console.error("Could not get channelId to join room.");
       // エラー処理: ルームに参加できない場合
     }
   });
@@ -111,6 +108,14 @@ async function setupDiscordSdk() {
     const { participants } =
       await discordSdk.commands.getInstanceConnectedParticipants();
     console.log("Connected users:", participants);
+
+    // ボイスチャンネルIDを取得してSocket.IOのルームIDとして使用
+    currentRoomId = discordSdk.channelId;
+    if (currentRoomId) {
+      socket = setupSocketIO(currentRoomId);
+    } else {
+      console.error("channelIdが取得できませんでした。");
+    }
     // count = participants.length;
   } catch (error) {
     console.error("Error fetching access token:", error);
@@ -142,11 +147,17 @@ function incrementAndNotify(socket: Socket) {
 // // 以前のDiscord SDKコマンドベースの処理は不要なため削除
 
 // // Socket.IOのセットアップを直接呼び出す
-const socket = setupSocketIO(); // setupDiscordSdk内で呼び出すように変更
+// const socket = setupSocketIO(); // setupDiscordSdk内で呼び出すように変更
+
+let socket: Socket | null = null;
 
 if (incrementButton) {
   // ボタンクリック時の処理を変更
-  incrementButton.addEventListener("click", () => incrementAndNotify(socket));
+  incrementButton.addEventListener("click", () => {
+    if (socket) {
+      incrementAndNotify(socket);
+    }
+  });
 }
 
 // // 初期表示
@@ -154,4 +165,18 @@ updateCountDisplay();
 
 console.log("Counter app initialized.");
 
-setupDiscordSdk();
+// Discord SDKが利用可能かどうかで分岐
+function isDiscordClient() {
+  // Discord埋め込み環境ではwindow.DiscordNativeが存在することが多い
+  // もしくはUserAgentや他の判定方法も考えられる
+  // ここではDiscord SDKの有無で判定
+  return typeof window !== "undefined" && "DiscordNative" in window;
+}
+
+if (isDiscordClient()) {
+  setupDiscordSdk();
+} else {
+  // Webクライアントの場合
+  currentRoomId = "web";
+  socket = setupSocketIO(currentRoomId);
+}
