@@ -1,0 +1,10 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "main": "events.ts",
+  "types": "events.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "socket.io-client": "^4.7.0"
+  }
+}

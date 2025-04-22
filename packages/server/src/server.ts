@@ -1,13 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
 import http from "http"; // httpモジュールをインポート
-import { Server as SocketIOServer } from "socket.io"; // Socket.IOサーバーをインポート
+import { Server as SocketIOServer, Socket } from "socket.io"; // Socket.IOサーバーをインポート
+import { EventsMap } from "../../shared/events";
 
 dotenv.config(); // .envファイルから環境変数を読み込む
 
 const app = express();
 const server = http.createServer(app); // ExpressアプリからHTTPサーバーを作成
-const io = new SocketIOServer(server, {
+const io = new SocketIOServer<EventsMap>(server, {
   // HTTPサーバーにSocket.IOをアタッチ
   cors: {
     origin: "*", // 開発用にすべてのオリジンを許可 (本番では制限推奨)
@@ -21,12 +22,12 @@ const port = process.env.PORT || 3000; // 環境変数またはデフォルト�
 const roomCounts = new Map<string, number>();
 
 // Socket.IO接続ハンドラ
-io.on("connection", (socket) => {
+io.on("connection", (socket: Socket<EventsMap, EventsMap>) => {
   console.log(`Client connected: ${socket.id}`);
   let currentRoomId: string | null = null; // この接続が現在属しているルームID
 
   // ルーム参加イベント
-  socket.on("joinRoom", ({ roomId }: { roomId: string }) => {
+  socket.on("joinRoom", (roomId: string) => {
     if (!roomId) return;
 
     // 既存のルームから退出 (もしあれば)
@@ -75,9 +76,6 @@ io.on("connection", (socket) => {
   // 切断イベント
   socket.on("disconnect", () => {
     console.log(`Client disconnected: ${socket.id}`);
-    // 必要であれば、ここでユーザーがルームから完全に退出した際の処理を追加
-    // (例: ルームに誰もいなくなったらカウントをリセットするなど)
-    // この例ではシンプルにするため、切断時のルーム退出処理は省略
     currentRoomId = null; // ルーム情報をクリア (再接続時に再度joinRoomが必要)
   });
 });
@@ -109,18 +107,7 @@ app.post("/token", async (req, res) => {
       grant_type: "authorization_code",
       code: code,
     };
-    console.log({ obj });
-    const params = new URLSearchParams(obj).toString();
 
-    // const response = await axios.post(
-    //   `https://discord.com/api/oauth2/token`,
-    //   params,
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/x-www-form-urlencoded",
-    //     },
-    //   }
-    // );
     const response = await fetch(`https://discord.com/api/oauth2/token`, {
       method: "POST",
       headers: {
@@ -128,7 +115,6 @@ app.post("/token", async (req, res) => {
       },
       body: new URLSearchParams(obj),
     });
-    console.log({ response });
     const { access_token } = await response.json();
 
     res.send({ access_token });
