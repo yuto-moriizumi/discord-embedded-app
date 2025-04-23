@@ -19,7 +19,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+
+    "rootDir": "."
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

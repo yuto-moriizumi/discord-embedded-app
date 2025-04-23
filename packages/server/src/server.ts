@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
-import { EventsMap } from "../../shared/events";
+import { EventsMap } from "shared"; // パッケージ名でインポート
 import { setupSocketHandlers } from "./socketHandlers"; // Socketハンドラをインポート
 
 dotenv.config();

@@ -1,5 +1,5 @@
 import { Server as SocketIOServer, Socket } from "socket.io";
-import { EventsMap, User } from "../../shared/events"; // Userをインポート
+import { EventsMap, User } from "shared"; // Userをインポート
 import {
   getRoomCount,
   incrementRoomCount,

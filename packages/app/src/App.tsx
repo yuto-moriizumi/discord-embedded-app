@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
-import type { EventsMap, User } from "../../shared/events";
+import type { EventsMap, User } from "shared";
 import { setupDiscordSdk } from "./setupDiscordSdk";
 
 /**
@@ -64,12 +64,12 @@ function setupSocketIO(
     socket.emit("joinRoom", roomId, userId, userName);
   });
 
-  socket.on("updateCount", (newCount) => {
+  socket.on("updateCount", (newCount: number) => {
     setCount(newCount);
   });
 
   // ユーザーリスト更新イベントをリッスン
-  socket.on("updateUsers", (users) => {
+  socket.on("updateUsers", (users: User[]) => {
     setUsers(users);
   });
 

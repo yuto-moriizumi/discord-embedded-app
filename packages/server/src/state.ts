@@ -1,4 +1,4 @@
-import type { User } from "../../shared/events"; // User型をインポート
+import type { User } from "shared"; // User型をインポート
 
 // ルームごとのカウンター状態を保持するMap
 export const roomCounts = new Map<string, number>();
