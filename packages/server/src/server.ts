@@ -23,6 +23,11 @@ setupSocketHandlers(io);
 
 app.use(express.json());
 
+// ヘルスチェック用ルート
+app.get("/", (req, res) => {
+  res.send("hello world");
+});
+
 app.post("/token", async (req, res) => {
   const { code } = req.body;
 

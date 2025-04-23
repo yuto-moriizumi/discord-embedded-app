@@ -1,0 +1,24 @@
+# Ignore node_modules directories in all packages and the root
+**/node_modules
+
+# Ignore build output directories
+**/dist
+**/build
+
+# Ignore Git files
+.git
+.gitignore
+
+# Ignore IDE/editor specific files
+.vscode
+*.code-workspace
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Ignore environment files (should be passed at runtime)
+.env*
+
+# Ignore pnpm debug logs
+pnpm-debug.log
