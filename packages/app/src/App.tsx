@@ -15,7 +15,12 @@ function isDiscordClient() {
 async function getConnectionInfo() {
   if (!isDiscordClient()) {
     // Discord外の場合、仮の情報を返す
-    return { roomId: "web", userId: "webUser", userName: "Web User" };
+    const randomId = Math.random().toString(36).substring(2, 10);
+    return {
+      roomId: `web`,
+      userId: `user-${randomId}`,
+      userName: `User-${randomId}`,
+    };
   }
 
   // Discordクライアント内の場合、SDKをセットアップ
@@ -71,34 +76,35 @@ function setupSocketIO(
   return socket;
 }
 
-// getRoomId 関数は getConnectionInfo に統合されたため削除
+interface ConnectionInfo {
+  roomId: string;
+  userId: string;
+  userName: string;
+}
 
 function App() {
   const [count, setCount] = useState(0);
-  const [roomId, setRoomId] = useState<string | null>(null);
+  const [connectionInfo, setConnectionInfo] = useState<ConnectionInfo>();
   const [users, setUsers] = useState<User[]>([]);
   const socketRef = useRef<Socket<EventsMap> | null>(null);
 
-  // Discord SDK認証、接続情報取得、Socket.IO接続
+  // Discord SDK認証、接続情報取得
   useEffect(() => {
-    (async () => {
-      try {
-        // 接続情報を取得 (roomId, userId, userName を含む)
-        const connectionInfo = await getConnectionInfo();
-        setRoomId(connectionInfo.roomId);
+    getConnectionInfo().then(setConnectionInfo);
+  }, []);
 
-        socketRef.current = setupSocketIO(connectionInfo, setCount, setUsers);
-      } catch (error) {
-        console.error("Initialization failed:", error);
-        // エラーハンドリング: 必要に応じてユーザーに通知など
-      }
-    })();
+  // Socket.IO接続
+  useEffect(() => {
+    if (!connectionInfo) return;
+    socketRef.current = setupSocketIO(connectionInfo, setCount, setUsers);
 
     return () => {
-      // コンポーネントのアンマウント時にソケットを切断
-      if (socketRef.current) socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, []);
+  }, [connectionInfo]);
 
   const handleIncrement = () => {
     if (socketRef.current) socketRef.current.emit("incrementCount");
@@ -107,7 +113,8 @@ function App() {
   return (
     <div className="container">
       <h1>Counter App</h1>
-      <p>Room ID: {roomId ?? "Loading..."}</p> {/* roomIdを表示 */}
+      <p>Room ID: {connectionInfo?.roomId ?? "Loading..."}</p>{" "}
+      {/* connectionInfoからroomIdを表示 */}
       <h2>Users in Room:</h2>
       <ul>
         {users.map((user) => (
