@@ -91,6 +91,9 @@ export function setupSocketHandlers(io: SocketIOServer<EventsMap>) {
       }
 
       const newCount = incrementRoomCount(currentRoomId);
+      console.debug(
+        `${socket.id} incremented count for ${currentRoomId} to ${newCount}`
+      );
       io.to(currentRoomId).emit("updateCount", newCount);
     });
 

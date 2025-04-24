@@ -41,9 +41,8 @@ app.post("/token", async (req, res) => {
 
   const clientId = process.env.DISCORD_CLIENT_ID;
   const clientSecret = process.env.DISCORD_CLIENT_SECRET;
-  const redirectUri = process.env.DISCORD_REDIRECT_URI; // Discord Developer Portalで設定したリダイレクトURI
 
-  if (!clientId || !clientSecret || !redirectUri) {
+  if (!clientId || !clientSecret) {
     console.error("Missing Discord credentials or redirect URI in .env");
     return res.status(500).json({ error: "Server configuration error" });
   }

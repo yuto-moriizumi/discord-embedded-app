@@ -29,7 +29,9 @@ async function getConnectionInfo() {
    * DiscordクライアントはAPIと直接通信できないため、自分のオリジンの/apiルートにリクエストを転送する
    * 開発環境ではViteのproxyが、本番環境ではDiscordのproxyが動作する
    */
-  patchUrlMappings([{ target: baseUrl, prefix: "/api" }]);
+  const target = new URL(baseUrl).host;
+  console.log("Patching URL mappings for Discord client", target);
+  patchUrlMappings([{ target, prefix: "/api" }]);
 
   const { discordSdk, auth } = await setupDiscordSdk();
 

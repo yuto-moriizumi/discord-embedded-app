@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:app": "pnpm run --filter discord-counter-app dev",
+    "dev:server": "pnpm run --filter discord-counter-server dev",
+    "deploy:app": "pnpm run --filter discord-counter-app deploy"
   },
   "keywords": [],
   "author": "",
