@@ -18,7 +18,7 @@ COPY packages/shared/package.json ./packages/shared/
 # Install all dependencies using cache mount
 # Filter for the server and its dependencies to potentially reduce install size/time
 # Note: Installing all might be simpler if filtering causes issues, but filtering is generally better.
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter discord-counter-server...
+RUN pnpm install --frozen-lockfile --filter discord-counter-server...
 
 # Copy the rest of the source code
 COPY packages/server/ ./packages/server/
