@@ -1,4 +1,5 @@
 import { DiscordSDK } from "@discord/embedded-app-sdk";
+import { baseUrl } from "./getBaseUrl";
 
 export async function setupDiscordSdk() {
   const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
@@ -12,11 +13,9 @@ export async function setupDiscordSdk() {
     scope: ["identify", "guilds", "applications.commands"],
   });
 
-  const response = await window.fetch("/api/token", {
+  const response = await fetch(`${baseUrl}/token`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code }),
   });
   const data = await response.json();

@@ -13,7 +13,8 @@ export default defineConfig({
      * Discord proxyの動作をローカルで再現するための設定
      * Discord developer portal→Activity URL Mappingsにおいて、`/api`を本番サーバーのURLに転送する設定を行う環境を本番とすると、
      * 開発環境においては次の2種類のproxyを設定する必要がある。
-     * https://discord.com/developers/docs/activities/development-guides#run-your-application-locally
+     * なお、クライアントがWebブラウザの場合はこのproxyは使用されない。
+     * 関連: https://discord.com/developers/docs/activities/development-guides#run-your-application-locally
      */
     proxy: {
       "/api/token": {

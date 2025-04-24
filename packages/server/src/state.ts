@@ -47,10 +47,10 @@ export function removeUserFromRoom(roomId: string, userId: string): User[] {
   let users = getRoomUsers(roomId);
   users = users.filter((user) => user.id !== userId);
   roomUsers.set(roomId, users);
-  // ユーザーがいなくなったらルーム情報自体を削除しても良いかもしれない
-  // if (users.length === 0) {
-  //   roomUsers.delete(roomId);
-  //   roomCounts.delete(roomId); // カウントも削除する場合
-  // }
+  // ユーザーがいなくなったらルーム情報自体を削除
+  if (users.length === 0) {
+    roomUsers.delete(roomId);
+    roomCounts.delete(roomId); // カウントも削除する場合
+  }
   return users; // 更新後のリストを返す
 }

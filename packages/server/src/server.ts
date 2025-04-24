@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors"; // corsをインポート
 import dotenv from "dotenv";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
@@ -20,6 +21,9 @@ const port = process.env.PORT || 3000;
 
 // Socket.IOイベントハンドラを設定
 setupSocketHandlers(io);
+
+// CORSミドルウェアを適用 (すべてのオリジンを許可)
+app.use(cors({ origin: "*" }));
 
 app.use(express.json());
 

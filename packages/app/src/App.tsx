@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import type { EventsMap, User } from "shared";
 import { setupDiscordSdk } from "./setupDiscordSdk";
+import { baseUrl } from "./getBaseUrl";
+import { patchUrlMappings } from "@discord/embedded-app-sdk";
 
 /**
  * DiscordのActivityとして開かれているかどうかを判定する関数。
@@ -23,7 +25,12 @@ async function getConnectionInfo() {
     };
   }
 
-  // Discordクライアント内の場合、SDKをセットアップ
+  /**
+   * DiscordクライアントはAPIと直接通信できないため、自分のオリジンの/apiルートにリクエストを転送する
+   * 開発環境ではViteのproxyが、本番環境ではDiscordのproxyが動作する
+   */
+  patchUrlMappings([{ target: baseUrl, prefix: "/api" }]);
+
   const { discordSdk, auth } = await setupDiscordSdk();
 
   // Room ID (Channel ID) を取得
@@ -52,13 +59,7 @@ function setupSocketIO(
 ) {
   const { roomId, userId, userName } = connectionInfo;
 
-  const socketPath = import.meta.env.VITE_SOCKET_PATH;
-  const socketUrl = import.meta.env.VITE_SOCKET_URL;
-
-  const options = { path: socketPath };
-
-  const socket: Socket<EventsMap> =
-    import.meta.env.PROD && socketUrl ? io(socketUrl, options) : io(options);
+  const socket: Socket<EventsMap> = io(baseUrl, { path: "/socketio" });
 
   socket.on("connect", () => {
     // connectionInfoから取り出した値を使用
