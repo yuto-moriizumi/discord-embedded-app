@@ -45,18 +45,20 @@ async function getConnectionInfo() {
   return { roomId, userId, userName };
 }
 
-// setupSocketIO関数がconnectionInfoオブジェクトを受け取るように変更
 function setupSocketIO(
   connectionInfo: { roomId: string; userId: string; userName: string },
   setCount: React.Dispatch<React.SetStateAction<number>>,
   setUsers: React.Dispatch<React.SetStateAction<User[]>>
 ) {
-  const { roomId, userId, userName } = connectionInfo; // 分割代入で取り出す
-  const socket: Socket<EventsMap> = io({
-    path: "/api/socketio",
-    // 必要であれば認証情報などをqueryで渡すことも検討
-    // query: { userId, userName }
-  });
+  const { roomId, userId, userName } = connectionInfo;
+
+  const socketPath = import.meta.env.VITE_SOCKET_PATH;
+  const socketUrl = import.meta.env.VITE_SOCKET_URL;
+
+  const options = { path: socketPath };
+
+  const socket: Socket<EventsMap> =
+    import.meta.env.PROD && socketUrl ? io(socketUrl, options) : io(options);
 
   socket.on("connect", () => {
     // connectionInfoから取り出した値を使用
